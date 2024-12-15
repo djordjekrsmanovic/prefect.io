@@ -21,7 +21,6 @@ jobs:
 
     - name: SSH into Lightsail
       run: |
-          |
           ssh -o StrictHostKeyChecking=no ubuntu@18.159.103.43 << 'EOF'
             if [ -d "prefect.io" ]; then
               echo "Directory exists. Entering the directory..."
