@@ -39,7 +39,7 @@ jobs:
                 --force-renewal \
                 -d prefect.djordjeonline.org
               sudo docker compose -f nginx-compose.yml down
-              sudo docker compose up -d
+              sudo docker compose --profile server up -d
             else
               git clone https://github.com/djordjekrsmanovic/directus.io.git
               cd perfect.io
