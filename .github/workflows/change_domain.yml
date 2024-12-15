@@ -1,0 +1,63 @@
+name: Change Domain
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-to-lightsail:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install SSH Client
+      run: sudo apt-get install -y ssh
+
+    - name: Add SSH key to SSH agent
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.LIGHTSTAIL_SSH_KEY }}
+
+    - name: SSH into Lightsail
+      run: |
+          |
+          ssh -o StrictHostKeyChecking=no ubuntu@3.64.252.150 << 'EOF'
+            if [ -d "prefect.io" ]; then
+              echo "Directory exists. Entering the directory..."
+              cd prefect.io
+              sudo docker build . -t certbot
+
+              sudo docker compose -f nginx-compose.yml up -d
+              sudo docker run -it --rm --name certbot \
+                -v ${PWD}:/letsencrypt \
+                -v ${PWD}/certs:/etc/letsencrypt \
+                certbot/certbot certonly \
+                --manual \
+                --preferred-challenges dns \
+                --email your-email@example.com \
+                --agree-tos \
+                --force-renewal \
+                -d prefect.djordje-app.uk
+              sudo docker compose -f nginx-compose.yml down
+              sudo docker compose up -d
+            else
+              git clone https://github.com/djordjekrsmanovic/directus.io.git
+              cd perfect.io
+              sudo docker build . -t certbot
+
+              sudo docker compose -f nginx-compose.yml up -d
+              sudo docker run -it --rm --name certbot \
+                -v ${PWD}:/letsencrypt \
+                -v ${PWD}/certs:/etc/letsencrypt \
+                certbot/certbot certonly \
+                --manual \
+                --preferred-challenges dns \
+                --email your-email@example.com \
+                --agree-tos \
+                --force-renewal \
+                -d prefect.djordje-app.uk
+              sudo docker compose -f nginx-compose.yml down
+              sudo docker compose up -d
+            fi
+          EOF
