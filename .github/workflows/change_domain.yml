@@ -22,12 +22,12 @@ jobs:
     - name: SSH into Lightsail
       run: |
           |
-          ssh -o StrictHostKeyChecking=no ubuntu@3.64.252.150 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@18.159.103.43 << 'EOF'
             if [ -d "prefect.io" ]; then
               echo "Directory exists. Entering the directory..."
               cd prefect.io
               sudo docker build . -t certbot
-
+              sudo docker compose down
               sudo docker compose -f nginx-compose.yml up -d
               sudo docker run -it --rm --name certbot \
                 -v ${PWD}:/letsencrypt \
